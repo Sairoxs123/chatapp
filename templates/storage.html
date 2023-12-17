@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    {% for i in info %}
+    <title>
+        {{ i.username }}
+    </title>
+    {% endfor %}
+</head>
+
+<body>
+
+    <div>
+        {{ id }} <br><br> {{ username }} <br><br> <br><br> {{ email }}
+    </div>
+
+    {% for i in info %}
+    <h1>
+        {{ i.id }}
+    </h1>
+    <h1>
+        {{ i.username }}
+    </h1>
+    <h1>
+        {{ i.email }}
+    </h1>
+    {% endfor %}
+
+    <br><br><br><br>
+
+    <div id="messages">
+        {% for i in messages %}
+            {% for j in info %}
+                {% if i.incoming == username and i.outgoing == j.username %}
+                    <h2 style="color: red;">
+                        {{ i.message }}
+                    </h2>
+
+                    {{ continue }}
+
+                {% elif i.incoming == j.username and i.outgoing == username %}
+                    <h2 style="color: blue;">
+                        {{ i.message }}
+                    </h2>
+
+                    {{ continue }}
+
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    <div>
+            {% for j in info %}
+            <input type="text" name="incoming" value="{{ j.username }}" id="incoming">
+            {% endfor %}
+
+            <input type="text" name="outgoing" value="{{ username }}" id="outgoing">
+
+            <textarea name="message" maxlength="1000" cols="30" rows="10"></textarea>
+
+            <button onclick="sendMessage()">Submit</button>
+
+        <button type="button">Button</button>
+
+    </div>
+
+    <script>
+
+        function sendMessage(){
+            let userid = {{ senderid }};
+            let incoming = document.getElementById("incoming").value;
+            let outgoing = document.getElementById("outgoing").value;
+            let message = document.querySelector("textarea").value;
+            $.ajax({
+                url:"/main/chat/sendmessage",
+                type: "GET",
+                contentType: "text/javascript",
+                data: {
+                    'incoming' : incoming, 'outgoing' : outgoing, 'message' : message
+                },
+                dataType: "json",
+                success: function(response){
+                    console.log(response.result);
+                },
+                error: function (error){
+                    console.log(error);
+                }
+            });
+            document.querySelector("textarea").value = "";
+        }
+
+
+        async function getmessage(){
+                let userid = {{ senderid }};
+                let request = await fetch(`http://127.0.0.1:8000/main/chat/fetch/${userid}`);
+                let data = await request.text();
+                //console.log(data)
+                messages = data.split("</h2>");
+                document.getElementById("messages").innerHTML = "";
+                for (let index = 0; index < messages.length; index++) {
+                    document.getElementById("messages").innerHTML += messages[index];
+                }
+        }
+
+        window.onload = setInterval(getmessage, 500);
+    </script>
+</body>
+
+</html>
+
+<a href="/main/chat/{{i.id}}">
+    <div class="options">
+        <div class="option">
+            <div class="img">
+                <img src="{{ i.photo.url }}" height="56" width="56">
+            </div>
+            <div class="user">
+                <h3>{{ i.username }}</h3>
+            </div>
+        </div>
+    </div>
+</a>
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>
+
+        {{ id }} <br><br> {{ username }} <br><br> <br><br> {{ email }}
+
+        <img src="{{ url }}" style="height: 10%; width: 10%; border-radius: 50%;">
+
+    </h1>
+
+    <ul>
+        {% for i in users %}
+            {% if i.username == username %}
+
+            {% else %}
+                <li>
+                    {{ i.id }}
+                </li>
+                <li>
+                    {{ i.username }}
+                </li>
+                <li>
+                    {{ i.email }}
+                </li>
+                <li>
+                    <img src="{{ i.photo.url }}" alt="">
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+</body>
+</html>

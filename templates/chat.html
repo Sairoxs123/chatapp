@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    {% for i in info %}
+    <title>
+        {{ i.username }}
+    </title>
+    <link href="{{ i.photo.url }}" rel="icon">
+    {% endfor %}
+
+    <style>
+body {
+    background-color: black;
+    width: 99%;
+    height: 100%;
+    overflow-y: hidden;
+}
+
+#mobile {
+    display: none;
+}
+
+* {
+    color: white;
+    background-color: black;
+}
+
+#search,
+#search-mobile {
+    background-color: inherit;
+    border: 2px solid white;
+    border-radius: 22px;
+    padding: 1%;
+    margin-left: 1%;
+}
+
+#left {
+    width: 17.5%;
+    height: 100%;
+    overflow-y: scroll;
+    position: fixed;
+    margin-top: 2%;
+}
+
+#left .options {
+    width: 100%;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+#pfp {
+    border-radius: 50%;
+}
+
+.option {
+    display: flex;
+}
+
+.user {
+    margin-left: 2%;
+}
+
+.logout {
+    position: absolute;
+    right: 0;
+    margin-right: 3%;
+    margin-top: 1.5%;
+    font-size: 2em;
+}
+
+a {
+    text-decoration: none;
+}
+
+#right {
+    height: 100%;
+    width: 82.5%;
+    top: 0;
+    margin-left: 17.5%;
+    position: fixed;
+    border-left: 3px grey solid;
+}
+
+#right .top {
+    display: flex;
+    justify-content: center;
+    padding-top: 1%;
+    border-bottom: 2px grey solid;
+}
+
+.messages {
+    width: 82%;
+    height: 75%;
+    position: fixed;
+    overflow: scroll;
+    overflow-x: hidden;
+    font-size: 2em;
+    border-bottom: 2px yellow solid;
+}
+
+.messages .right {
+    display: flex;
+    justify-content: right;
+    margin-right: 2%;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
+.messages .right span {
+    background-color: rgb(55, 151, 240);
+    width: auto;
+    padding: 7px 12px;
+    border-bottom-left-radius: 18px;
+    border-top-left-radius: 18px;
+    overflow-wrap: break-word;
+    max-width: 564px;
+    border-top-right-radius: 18px;
+    word-break: break-word;
+}
+
+.messages .left {
+    left: 0;
+    margin-left: 2%;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
+.messages .left span {
+    background-color: rgb(38, 38, 38);
+    width: auto;
+    padding: 7px 12px;
+    border-bottom-right-radius: 18px;
+    border-top-left-radius: 18px;
+    overflow-wrap: break-word;
+    max-width: 564px;
+    border-top-right-radius: 18px;
+    word-break: break-word;
+}
+
+#right .sendmessage {
+    height: 12.5%;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+}
+
+#right .sendmessage .form {
+    margin: 1.5%;
+}
+
+#right .sendmessage .form .input {
+    width: 75%;
+    background-color: inherit;
+    border: 2px solid white;
+    border-radius: 22px;
+    padding: 1%;
+}
+
+#right .sendmessage .form .send {
+    position: fixed;
+    margin-left: -7.5%;
+    margin-top: 0.75%;
+    color: rgb(55, 151, 240);
+    font-size: 1.5em;
+    font-weight: 700;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+textarea {
+    resize: none;
+}
+
+#image-upload {
+    position: fixed;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    display: none;
+    z-index: 1;
+}
+
+#image-upload .content {
+    margin-top: 20%;
+}
+
+#image-upload .close{
+    position: fixed;
+    top: 0;
+    right: 0;
+    margin: 2%;
+}
+
+#image-upload .close button{
+    background-color: none;
+    border: none;
+    font-size: 2em;
+}
+
+@media only screen and (max-width: 600px) {
+    #desktop {
+        display: none;
+    }
+
+    #mobile {
+        display: block;
+        background-color: black;
+        height: 500%;
+        width: 100%;
+    }
+
+    #main {
+        height: 200%;
+    }
+
+    #main .top {
+        display: flex;
+        justify-content: center;
+        padding: 2%;
+    }
+
+    #main .top .user {
+        margin-top: 4%;
+    }
+
+    #main .messages {
+        width: 100%;
+    }
+
+    #main .messages .left {
+        left: 0;
+        font-size: 0.75em;
+    }
+
+    #main .messages .right {
+        margin-left: 25%;
+        font-size: 0.75em;
+    }
+
+    .useropt {
+        display: flexbox;
+    }
+
+    .user {
+        margin-top: 3%;
+    }
+
+    .options {
+        margin-top: 5%;
+    }
+
+    .sendmessage {
+        margin-top: 170%;
+        display: block;
+        position: absolute;
+    }
+
+    #mobile .sendmessage {
+        height: 12.5%;
+        width: 100%;
+        position: fixed;
+        bottom: 0;
+    }
+
+    #mobile .sendmessage .form {
+        margin: 2%;
+        margin-top: -10%;
+        z-index: -99;
+    }
+
+    #mobile .sendmessage .form .input {
+        width: 80%;
+        background-color: inherit;
+        border: 2px solid white;
+        border-radius: 22px;
+        padding: 3%;
+        margin-left: 19%;
+    }
+
+    #mobile .sendmessage .form .send {
+        position: fixed;
+        margin-left: -20%;
+        margin-top: 0.75%;
+        color: rgb(55, 151, 240);
+        font-size: 1.5em;
+        font-weight: 700;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+    }
+
+    #logout {
+        font-size: 1em;
+    }
+
+    #messages-mobile .left span,
+    #messages-mobile .right span {
+        max-width: 500px;
+    }
+
+}
+    </style>
+</head>
+
+<body>
+
+    <div id="mobile">
+
+        <nav data-bs-theme="dark">
+            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions"
+                style="position: fixed;">☰</button>
+
+            <div class="offcanvas offcanvas-start text-bg-dark" data-bs-scroll="true" tabindex="-1"
+                id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">
+                        <div class="useropt">
+                            <h1>
+                                <a href="{% url 'dashboard' %}">{{ username }}</a>
+                            </h1>
+                            <input type="search" name="search" placeholder="Search..." id="search-mobile"
+                                oninput="searchmobile()">
+                        </div>
+                        <div class="logout" id="logout">
+                            <a href="{% url 'logout' %}">Logout</a>
+                        </div>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                        aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body" id="options">
+                    {% for i in users %}
+                    {% if i.username == username %}
+
+                    {% else %}
+                    <a href="/main/chat/{{i.id}}">
+                        <div class="options">
+                            <div class="option">
+                                <div class="img">
+                                    <img src="{{ i.photo.url }}" height="56" width="56" id="pfp">
+                                </div>
+                                <div class="user">
+                                    <h3>{{ i.username }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </nav>
+
+        <div id="main">
+            <div class="top">
+                {% for i in info %}
+                <div class="img">
+                    <img src="{{ i.photo.url }}" height="70" width="70" id="pfp">
+                </div>
+                <div class="user">
+                    <h1>{{ i.username }}</h1>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="messages" id="messages-mobile">
+
+            </div>
+            <div class="sendmessage">
+                <button onclick="imageUpload()" class="btn btn-primary" id="img-mobile-button">Image</button>
+                <div class="form" id="mobile-form">
+                    {% for j in info %}
+                    <input type="text" name="incoming" value="{{ j.username }}" id="incoming-mobile" hidden>
+                    {% endfor %}
+
+                    <input type="text" name="outgoing" value="{{ username }}" id="outgoing-mobile" hidden>
+                    <input type="text" name="message" id="message-mobile" maxlength="1000" class="input"
+                        placeholder="Send message..." required>
+                    <button type="button" class="send" id="send-mobile" onclick="sendMessageMobile()">Send</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.getElementById("message-mobile").addEventListener("focus", () => {
+            document.getElementById("img-mobile-button").style.display = "none";
+            document.getElementById("mobile-form").style.marginTop = "0%";
+            document.getElementById("mobile-form").style.marginLeft = "0%";
+            document.getElementById("message-mobile").style.width = "100%";
+            document.getElementById("message-mobile").style.marginLeft = "0%";
+        })
+
+        document.getElementById("message-mobile").addEventListener("blur", () => {
+            document.getElementById("img-mobile-button").style.display = "block";
+            document.getElementById("img-mobile-button").style.zIndex = "1";
+            document.getElementById("mobile-form").style.marginTop = "-10%";
+            document.getElementById("message-mobile").style.width = "90%"
+            document.getElementById("mobile-form").style.marginLeft = "19%";
+            document.getElementById("message-mobile").style.marginLeft = "5%";
+        })
+    </script>
+
+    <div id="image-upload">
+        <div class="content">
+
+            <div class="close">
+                <button id="close-btn" onclick="imgClose()">&times;</button>
+            </div>
+
+            <script>
+                function imgClose() {
+                    document.getElementById("desktop").style.opacity = 1;
+                    document.getElementById("mobile").style.opacity = 1;
+                    document.getElementById("image-upload").style.display = "none";
+                }
+            </script>
+
+            <h1>Send Image</h1>
+
+
+                {% csrf_token %}
+
+                <p style="visibility: hidden; position: fixed; top: 0;">
+                    <label for="id_incoming">Incoming:</label>
+                    {% for j in info %}
+                    <input type="text" value="{{ j.username }}" name="incoming" required="" id="id_incoming">
+                    {% endfor %}
+                </p>
+
+                <p style="visibility: hidden; position: fixed; top: 0;">
+                    <label for="id_outgoing">Outgoing:</label>
+                    <input type="text" value="{{ username }}" name="outgoing" required="" id="id_outgoing">
+                </p>
+
+                <p style="visibility: hidden; position: fixed; top: 0;">
+                <label for="id_type">Type:</label>
+                <input type="text" name="type" maxlength="10" value="image" required="" id="id_type">
+                </p>
+
+
+                <p>
+                <label for="id_image">Image:</label>
+                <input type="file" name="image" accept="image/*" id="id_image">
+                </p>
+
+
+                <p style="visibility: hidden; position: fixed; top: 0;">
+                <label for="id_message">Message:</label>
+                <textarea name="message" cols="40" rows="10" maxlength="1000" id="id_message">""</textarea>
+                </p>
+
+                <input type="hidden" name="userid" id="userid" value="'{{ senderid }}'">
+
+
+                <button class="btn btn-primary" id="sendimg" style="margin-left: -5%;" type="button">Send</button>
+
+
+
+            <script>
+                $('#sendimg').click(function () {
+                    var data = new FormData();
+                    data.append("image", $("#id_image")[0].files[0])
+                    data.append("csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val())
+                    data.append("incoming", $("#id_incoming").val())
+                    data.append("outgoing", $("#id_outgoing").val())
+                    data.append("type", $("#id_type").val())
+                    data.append("message", $("#id_message").val())
+                    data.append("userid", $("#userid").val())
+                    $.ajax({
+                        method: "POST",
+                        url: "{% url 'send-image' %}",
+                        processData: false,
+                        contentType: false,
+                        mimeType: "multipart/form-data",
+                        data: data,
+                        success: function (response) {
+                            console.log(response.result);
+                        },
+                    })
+                    imgClose();
+                })
+            </script>
+
+
+            <!--
+            <script>
+                var incoming = document.getElementById("id_incoming");
+                var outgoing = document.getElementById("id_outgoing");
+                var type = document.getElementById("id_type")
+                var message = document.getElementById("id_message")
+                const image = document.getElementById("id_image")
+                const csrftoken_elmt = document.querySelector('input[name=csrfmiddlewaretoken]');
+
+                const sendData = async (data, link) => {
+                    try {
+                        // ${baseURL}registration/enregistrement_pro/
+                        let response = await fetch(`${link}`,
+                            {
+                                method: 'POST',
+                                body: data,
+                                headers: {
+                                    'Content-Type': 'multipart/form-data',
+                                    'X-CSRFToken': csrftoken_elmt.value,
+                                },
+                            }
+                        );
+                        return await response.json();
+                    } catch(err) {
+                        console.log(err);
+                    }
+                }
+
+                document.getElementById("sendimg").addEventListener("click", (evt) => {
+                    evt.preventDefault();
+
+                    const formData = new FormData();
+
+                    formData.append("incoming", incoming.value);
+                    formData.append("outgoing", outgoing.value);
+                    formData.append("type", type.value);
+                    formData.append("message", message.value);
+                    formData.append("image", image.files[0]);
+
+                    sendData(formData, "{% url 'send-image' %}")
+                    .then(json => {
+                        console.log(json)
+                    });
+
+                })
+
+            </script>
+            -->
+
+        </div>
+    </div>
+
+    <div id="desktop">
+        <div class="useropt">
+            <h1>
+                <a href="{% url 'dashboard' %}">{{ username }}</a>
+            </h1>
+            <input type="search" name="search" placeholder="Search..." id="search" oninput="search()">
+        </div>
+
+        <div id="left">
+            {% for i in users %}
+            {% if i.username == username %}
+
+            {% else %}
+            <a href="/main/chat/{{i.id}}">
+                <div class="options">
+                    <div class="option">
+                        <div class="img">
+                            <img src="{{ i.photo.url }}" height="56" width="56" id="pfp">
+                        </div>
+                        <div class="user" style="margin-top: 3%;">
+                            <h3>{{ i.username }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <div id="right">
+            <div class="top">
+                {% for i in info %}
+                <div class="img">
+                    <img src="{{ i.photo.url }}" height="70" width="70" id="pfp">
+                </div>
+                <div class="user" style="margin-top: 0.5%;">
+                    <h1>{{ i.username }}</h1>
+                </div>
+                {% endfor %}
+                <div class="logout">
+                    <a href="{% url 'logout' %}">Logout</a>
+                </div>
+            </div>
+            <div class="messages" id="messages">
+                <!--SENT IS BLUE AND RIGHT-->
+                <!--RECEIVED IS GREY AND LEFT-->
+            </div>
+            <div class="sendmessage">
+                <div class="form">
+
+                    <button onclick="imageUpload()" class="btn btn-primary">Image</button>
+
+                    {% for j in info %}
+                    <input type="text" name="incoming" value="{{ j.username }}" id="incoming" hidden>
+                    {% endfor %}
+
+                    <input type="text" name="outgoing" value="{{ username }}" id="outgoing" hidden>
+                    <input type="text" name="message" id="message" maxlength="1000" class="input"
+                        placeholder="Send message..." required>
+                    <button type="button" class="send" id="send" onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function imageUpload() {
+            document.getElementById("desktop").style.opacity = 0.1;
+            document.getElementById("mobile").style.opacity = 0.1;
+            document.getElementById("image-upload").style.display = "block";
+        }
+    </script>
+
+<script>
+    function scroll(){
+        let div = document.getElementById("messages");
+        div.scrollTo({
+            top: div.scrollHeight,
+            behavior: "smooth"
+        });
+        scrollMobile();
+    }
+
+    function scrollMobile(){
+        let div2 = document.getElementById("messages-mobile");
+        div2.scrollTo({
+            top: div2.scrollHeight,
+            behavior: "smooth"
+        });
+    }
+
+    window.onload = scroll;
+</script>
+
+<script>
+            $("#message").keypress(function (event) {
+            if (event.keyCode === 13) {
+                $("#send").click();
+            }
+        });
+
+        $("#send").click(function () {
+            sendMessage();
+        });
+</script>
+
+<script>
+
+    async function search() {
+        query = document.getElementById("search").value;
+        let request = await fetch(`/main/search?q=${query}`);
+        let data = await request.text();
+        //console.log(data)
+        users = data.split("</a>");
+        document.getElementById("left").innerHTML = "";
+        for (let index = 0; index < users.length; index++) {
+            const element = users[index];
+            document.getElementById("left").innerHTML += element;
+        }
+
+    }
+
+    async function searchmobile() {
+        query = document.getElementById("search-mobile").value;
+        let request = await fetch(`/main/search?q=${query}`);
+        let data = await request.text();
+        //console.log(data)
+        users = data.split("</a>");
+        document.getElementById("options").innerHTML = "";
+        for (let index = 0; index < users.length; index++) {
+            const element = users[index];
+            document.getElementById("options").innerHTML += element;
+        }
+
+    }
+
+
+    let counter_main = 1;
+
+    function sendMessage() {
+        let userid = '{{ senderid }}';
+        var incoming = document.getElementById("incoming").value;
+        var outgoing = document.getElementById("outgoing").value;
+        var message = document.getElementById("message").value;
+
+        if (message == "") {
+            console.log(message)
+        } else {
+            $.ajax({
+                url: "/main/chat/sendmessage",
+                type: "GET",
+                contentType: "text/javascript",
+                data: {
+                    'incoming': incoming, 'outgoing': outgoing, 'message': message
+                },
+                dataType: "json",
+                success: function (response) {
+                    console.log(response.result);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+            setTimeout(scroll, 600);
+            document.getElementById("message").value = "";
+        }
+    }
+
+    function sendMessageMobile() {
+            let userid = '{{ senderid }}';
+            var incoming = document.getElementById("incoming-mobile").value;
+            var outgoing = document.getElementById("outgoing-mobile").value;
+            var message = document.getElementById("message-mobile").value;
+
+        if (message == "") {
+            alert("Empty");
+        } else {
+            $.ajax({
+                url: "/main/chat/sendmessage",
+                type: "GET",
+                contentType: "text/javascript",
+                data: {
+                    'incoming': incoming, 'outgoing': outgoing, 'message': message
+                },
+                dataType: "json",
+                success: function (response) {
+                    console.log(response.result);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+            setTimeout(scrollMobile, 600);
+            document.getElementById("message-mobile").value = "";
+        }
+        }
+
+    let counter = 1;
+
+    let storage = [];
+
+    let allstorage = [];
+
+    async function getmessage() {
+        let userid = '{{ senderid }}';
+        let request = await fetch(`/main/chat/fetch/${userid}`);
+        let data = await request.text();
+        //console.log(data)
+        messages = data.split("</div>");
+        length = messages.length;
+
+        if (length != storage[0]){
+            storage[0] = 0;
+            counter = 1;
+        }
+
+        //document.getElementById("messages").innerHTML = "";
+        for (let index = 0; index < messages.length; index++) {
+            //document.getElementById("messages").innerHTML += messages[index];
+            if (allstorage.includes(messages[index]) == false){
+                allstorage.push(messages[index]);
+            }
+        }
+
+        if (counter == 1){
+            document.getElementById("messages").innerHTML = "";
+            document.getElementById("messages-mobile").innerHTML = "";
+            for (let i = 0; i < allstorage.length; i++){
+                document.getElementById("messages").innerHTML += allstorage[i];
+                document.getElementById("messages-mobile").innerHTML += allstorage[i];
+            }
+            scroll();
+            storage[0] = length;
+            counter--;
+        }
+    }
+
+
+    window.onload = setInterval(getmessage, 500);
+</script>
+</body>
+
+</html>
