@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% if message == "email-exists" %}
+        <h1>Email has already been registered.</h1>
+    {% elif message == "username-exists" %}
+        <h1>Username already exists.</h1>
+    {% elif message == "signed" %}
+        <h1>You have signed up successfully.</h1>
+    {% elif message == "wrongpassword" %}
+        <h1>The password you have enterd is incorrect.</h1>
+    {% elif message == "account-no-exist" %}
+        <h1>Account doesn't exist.</h1>
+    {% elif message == "same" %}
+        <h1>You cannot message yourself.</h1>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .select {
+            background: none;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <form action="{% url 'create-group' %}" method="post" id="create">
+        {% csrf_token %}
+
+        <label>Name of the group: </label>
+        <input type="text" name="name" placeholder="Name: " form="create">
+
+        <br><br>
+
+        <label>Select users: </label>
+        {% for i in users %}
+        {% if i.username != username %}
+        <button type="button" onclick="selectedUsers(`{{ i }}`, `{{ i.id }}`)" class="select">
+            <div>
+                <input type="checkbox" name="user" value="{{ i }}" id="{{ i.id }}">
+                <img src="{{ i.photo.url }}" width="56" height="56" style="border-radius: 50%;">
+                {{i}}
+            </div>
+        </button>
+        {% endif %}
+        {% endfor %}
+
+        <div id="users"></div>
+
+        <br><br>
+
+        <button type="submit" id="submit" disabled>Submit</button>
+
+    </form>
+
+    <script>
+
+        let users = [`{{ username }}`];
+
+        function selectedUsers(name, id) {
+            const check = document.getElementById(id);
+            if (check.checked) {
+                if (users.includes(name) === false) {
+                    users.push(name);
+                }
+                console.log(users)
+            } else {
+                const pos = users.indexOf(name);
+                if (pos > -1) {
+                    users.splice(pos, 1);
+                }
+            }
+
+            if (users.length > 1){
+                document.getElementById("submit").removeAttribute("disabled");
+            } else {
+                document.getElementById("submit").setAttribute("disabled", "true");
+            }
+
+            document.getElementById('users').innerHTML = `<input type="hidden" name="users" value="${users}" form="create">`;
+        }
+    </script>
+
+</body>
+
+</html>

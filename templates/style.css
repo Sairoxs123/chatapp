@@ -1,0 +1,205 @@
+body {
+    background-color: black;
+    width: 99%;
+    height: 100%;
+    overflow-y: hidden;
+}
+
+*{
+    color: white;
+}
+
+#search{
+    background-color: inherit;
+    border: 2px solid white;
+    border-radius: 22px;
+    padding: 1%;
+    margin-left: 1%;
+}
+
+#left{
+    width: 17.5%;
+    height: 100%;
+    overflow-y: scroll;
+    position: fixed;
+    margin-top: 2%;
+}
+
+#left .options{
+    width: 100%;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+img{
+    border-radius: 50%;
+}
+
+.option{
+    display: flex;
+}
+
+.user{
+    margin-left: 2%;
+}
+
+.logout{
+    position: absolute;
+    right: 0;
+    margin-right: 3%;
+    margin-top: 1.5%;
+    font-size: 2em;
+}
+
+a{
+    text-decoration: none;
+}
+
+#right{
+    height: 100%;
+    width: 82.5%;
+    top: 0;
+    margin-left: 17.5%;
+    position: fixed;
+    border-left: 3px grey solid;
+}
+
+#right .top{
+    display: flex;
+    justify-content: center;
+    padding-top: 1%;
+    border-bottom: 2px grey solid;
+}
+
+.messages{
+    width: 82%;
+    height: 75%;
+    position: fixed;
+    overflow: scroll;
+    overflow-x: hidden;
+    font-size: 2em;
+    border-bottom: 2px yellow solid;
+}
+
+.messages .center{
+    display: flex;
+    justify-content: center;
+    font-size: 0.75em;
+}
+
+.messages .center span{
+    background-color: grey;
+    padding: 1%;
+    border-radius: 10px;
+}
+
+.messages .right{
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    margin-right: 2%;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
+.messages .right span{
+    background-color: rgb(55, 151, 240);
+    width: auto;
+    padding: 7px 12px;
+    border-bottom-left-radius: 18px;
+    border-top-left-radius: 18px;
+    overflow-wrap: break-word;
+    max-width: 564px;
+    border-top-right-radius: 18px;
+    word-break: break-word;
+}
+
+.messages .left{
+    left: 0;
+    margin-left: 2%;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
+.messages .left span{
+    background-color: rgb(38, 38, 38);
+    width: auto;
+    padding: 7px 12px;
+    border-bottom-right-radius: 18px;
+    border-top-left-radius: 18px;
+    overflow-wrap: break-word;
+    max-width: 564px;
+    border-top-right-radius: 18px;
+    word-break: break-word;
+}
+
+#right .sendmessage{
+    height: 12.5%;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+}
+
+#right .sendmessage .form{
+    margin: 1.5%;
+}
+
+#right .sendmessage .form .input{
+    width: 80%;
+    background-color: inherit;
+    border: 2px solid white;
+    border-radius: 22px;
+    padding: 1%;
+}
+
+#right .sendmessage .form .send{
+    position: fixed;
+    margin-left: -7.5%;
+    margin-top: 0.75%;
+    color: rgb(55, 151, 240);
+    font-size: 1.5em;
+    font-weight: 700;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+textarea{
+    resize: none;
+}
+
+.menu{
+    margin-right: 1%;
+    display: none;
+}
+
+.menu-btn{
+    background: none;
+    border: none;
+    font-size: 1em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    height: 90%;
+}
+
+.right:hover .menu{
+    display: block;
+}
+
+.menu-content{
+    display: none;
+    height: 100%;
+    align-items: center;
+}
+
+.right:not(:hover) .menu-content{
+    visibility: hidden;
+}
+
+.delete-btn{
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.5em;
+}

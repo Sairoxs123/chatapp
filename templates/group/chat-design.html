@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Name of other dude</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="useropt">
+        <h1>
+            Name of user
+        </h1>
+        <input type="search" name="search" placeholder="Search..." id="search">
+    </div>
+
+    <div id="left">
+        <a href="">
+            <div class="options">
+                <div class="option">
+                    <div class="img">
+                        <img src="/media/pfps/pingpong_HeVHNDo.jpg" height="56" width="56">
+                    </div>
+                    <div class="user">
+                        <h3>Sairoxs123</h3>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div id="right">
+        <div class="top">
+            <div class="img">
+                <img src="/media/pfps/pingpong_HeVHNDo.jpg" height="70" width="70">
+            </div>
+            <div class="user">
+                <h1>Sairoxs123</h1>
+            </div>
+            <div class="logout">
+                <a href="/main/logout">Logout</a>
+            </div>
+        </div>
+        <div class="messages" id="messages">
+            <!--SENT IS BLUE AND RIGHT-->
+            <!--RECEIVED IS GREY AND LEFT-->
+            <div class="right">
+                <span>hi there</span>
+            </div>
+            <div class="left">
+                <span>hi there</span>
+            </div>
+            <div class="right">
+                <span>hi there</span>
+            </div>
+            <div class="left">
+                <span>hello</span>
+            </div>
+            <div class="right">
+                <span>hi there</span>
+            </div>
+            <div class="left">
+                <span>hello</span>
+            </div>
+            <div class="right">
+                <span>hi there</span>
+            </div>
+            <div class="left">
+                <span>hello</span>
+            </div>
+            <div class="right">
+                <span>hi there</span>
+            </div>
+            <div class="left">
+                <span>hello</span>
+            </div>
+            <div class="right">
+                <span>hi there</span>
+            </div>
+            <div class="left">
+                <span>hello</span>
+            </div>
+            <div class="right">
+                <div class="menu-content">
+                    <button type="button" class="delete-btn">Delete</button>
+                </div>
+                <div class="menu">
+                    <button type="button" class="menu-btn" onclick="openMenu()">...</button>
+                </div>
+                <span>hi there</span>
+            </div>
+            <div class="left">
+                <div class="image">
+                    <img src="/media/pfps/chamber_of_secrets.jpg" width="45" height="45" style="border-radius: 50%;">
+                </div>
+                <div class="main">
+                    <span>hello</span>
+                    <div class="name">
+                        -saiteja
+                    </div>
+                </div>
+
+            </div>
+            <div class="right">
+                <div class="menu-content">
+                    <button type="button" class="delete-btn">Delete</button>
+                </div>
+                <div class="menu">
+                    <button type="button" class="menu-btn" onclick="openMenu()">...</button>
+                </div>
+                <span>
+                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ullam beatae fugit voluptatum maxime non nesciunt sed, magnam ducimus unde quae aliquam voluptas suscipit ea architecto, quis odio necessitatibus quisquam cum!
+                </span>
+            </div>
+        </div>
+        <div class="sendmessage">
+            <div class="form">
+                <input type="text" class="input" placeholder="Send message..." maxlength="1000">
+                <button type="button" class="send">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        let menu_btn = document.querySelectorAll(".menu-btn");
+        let menu = document.querySelectorAll(".menu-content");
+
+        menu_btn.forEach((button, index) => {
+            button.onclick = (event) => {
+                menu[index].style.display = "block";
+            }
+        })
+
+
+        let div = document.getElementById("messages");
+        div.scrollTop = div.scrollHeight;
+    </script>
+</body>
+</html>
