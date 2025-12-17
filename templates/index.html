@@ -3,150 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ username }}</title>
+    <title>{{ username }} - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        *{
-    color: white;
-}
-
-nav{
-    position: fixed;
-    width: 100%;
-    background-color: black;
-    left: 0;
-    top: 0;
-    display: flex;
-    justify-content: center;
-    border-bottom: 2px solid white;
-}
-
-.center{
-    display: flex;
-    width: 50%;
-    justify-content: center;
-}
-
-h1{
-    font-size: 3em;
-}
-
-.logout{
-    position: fixed;
-    right: 0;
-    margin-right: 2%;
-    margin-top: 3%;
-    font-size: 2em;
-}
-
-img{
-    border-radius: 50%;
-    margin-top: 4%;
-    margin-right: 3%;
-}
-
-#main{
-    width: 25%;
-    height: 50%;
-    position: absolute;
-    margin-top: 15%;
-    margin-left: 40%;
-    background-color: black;
-    overflow-x: hidden;
-    overflow-y: scroll;
-}
-
-#main .search{
-    text-align: center;
-    position: fixed;
-    margin-top: -3%;
-    margin-left: 5%;
-}
-
-input{
-    font-size: 1em;
-}
-
-input::-webkit-input-placeholder { /* WebKit browsers */
-  padding: 2%;
-}
-input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-  padding: 2%;
-}
-input::-moz-placeholder { /* Mozilla Firefox 19+ */
-  padding: 2%;
-}
-input:-ms-input-placeholder { /* Internet Explorer 10+ */
-  padding: 2%;
-}
-
-a{
-    text-decoration: none;
-}
-
-.options{
-    width: 80%;
-    margin-left: 5%;
-}
-
-.option img{
-    margin-top: 30%;
-}
-
-.option{
-    display: flex;
-    margin-left: 3%;
-}
-
-.user{
-    margin-left: 3%;
-    font-size: 1.5rem;
-}
-
-#search{
-    background-color: inherit;
-    border: 2px solid white;
-    border-radius: 22px;
-    padding: 1%;
-    margin-left: 1%;
-    margin-top: 3%;
-}
-
-
+        .scroll-container {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+        }
+        .scroll-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scroll-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .scroll-container::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.5);
+            border-radius: 3px;
+        }
     </style>
 </head>
-<body bgcolor="black">
-    <nav>
-        <div class="center">
-            <img src="{{ url }}" height="80" width="80">
-            <h1>{{ username }}</h1>
-        </div>
-        <div class="logout">
-            <a href="{% url 'logout' %}">Logout</a>
+<body class="bg-gray-900 text-white min-h-screen">
+    <!-- Header -->
+    <nav class="bg-gray-800 border-b border-gray-700 fixed w-full top-0 z-10">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <img src="{{ url }}" alt="{{ username }}" class="w-12 h-12 rounded-full">
+                    <div>
+                        <h1 class="text-2xl font-bold">{{ username }}</h1>
+                        <p class="text-sm text-gray-400">{{ email }}</p>
+                    </div>
+                </div>
+                <a href="{% url 'logout' %}" class="flex items-center space-x-2 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    <span>Logout</span>
+                </a>
+            </div>
         </div>
     </nav>
 
-    <div id="main">
-        <div class="search">
-            <input type="search" id="search" oninput="search()" placeholder="Search user...">
-        </div>
-        <div class="users">
-            <div class="display" id="users">
-                {% for i in users %}
-                    {% if i.username == username %}
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 pt-24 pb-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Search Bar -->
+            <div class="mb-8">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <input type="search" id="search" placeholder="Search for users..." 
+                        class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500 transition">
+                </div>
+            </div>
 
-                    {% else %}
-                        <a href="/main/chat/direct/{{ i.id }}">
-                            <div class="options">
-                                <div class="option">
-                                    <div class="img">
-                                        <img src="{{ i.photo.url }}" height="56" width="56">
-                                    </div>
-                                    <div class="user">
-                                        <h3>{{ i.username }}</h3>
-                                    </div>
-                                </div>
+            <!-- Create Group Button -->
+            <div class="mb-6">
+                <a href="{% url 'create-group' %}" class="inline-flex items-center space-x-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    <span>Create Group</span>
+                </a>
+            </div>
+
+            <!-- Users Grid -->
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" id="users-grid">
+                {% for i in users %}
+                    {% if i.username != username %}
+                    <a href="/main/chat/direct/{{i.id}}" class="block bg-gray-800 hover:bg-gray-750 rounded-lg p-4 border border-gray-700 hover:border-blue-500 transition group">
+                        <div class="flex items-center space-x-4">
+                            <img src="{{ i.photo.url }}" alt="{{ i.username }}" class="w-16 h-16 rounded-full border-2 border-gray-700 group-hover:border-blue-500 transition">
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-lg">{{ i.username }}</h3>
+                                <p class="text-sm text-gray-400">Click to chat</p>
                             </div>
-                        </a>
+                            <svg class="w-6 h-6 text-gray-600 group-hover:text-blue-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </div>
+                    </a>
                     {% endif %}
                 {% endfor %}
             </div>
@@ -154,20 +93,55 @@ a{
     </div>
 
     <script>
-        async function search() {
-            query = document.getElementById("search").value;
-            let request = await fetch(`http://127.0.0.1:8000/main/search?q=${query}`);
-            let data = await request.text();
-            //console.log(data)
-            users = data.split("</a>");
-            document.getElementById("users").innerHTML = "";
-            for (let index = 0; index < users.length; index++) {
-                const element = users[index];
-                document.getElementById("users").innerHTML += element;
+        // Search functionality
+        document.getElementById('search').addEventListener('input', function(e) {
+            const query = e.target.value;
+            
+            if (!query) {
+                // If search is empty, reload the page to show all users
+                location.reload();
+                return;
             }
-
-        }
+            
+            fetch(`/main/search?q=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    const usersGrid = document.getElementById('users-grid');
+                    usersGrid.innerHTML = '';
+                    
+                    if (data.users.length === 0) {
+                        usersGrid.innerHTML = `
+                            <div class="col-span-full text-center py-12">
+                                <svg class="w-16 h-16 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                                <p class="text-gray-400 text-lg">No users found</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    data.users.forEach(user => {
+                        const userDiv = document.createElement('a');
+                        userDiv.href = `/main/chat/direct/${user.id}`;
+                        userDiv.className = 'block bg-gray-800 hover:bg-gray-750 rounded-lg p-4 border border-gray-700 hover:border-blue-500 transition group';
+                        userDiv.innerHTML = `
+                            <div class="flex items-center space-x-4">
+                                <img src="${user.photo_url}" alt="${user.username}" class="w-16 h-16 rounded-full border-2 border-gray-700 group-hover:border-blue-500 transition">
+                                <div class="flex-1">
+                                    <h3 class="font-semibold text-lg">${user.username}</h3>
+                                    <p class="text-sm text-gray-400">Click to chat</p>
+                                </div>
+                                <svg class="w-6 h-6 text-gray-600 group-hover:text-blue-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                        `;
+                        usersGrid.appendChild(userDiv);
+                    });
+                })
+                .catch(error => console.error('Error searching users:', error));
+        });
     </script>
-
 </body>
 </html>
