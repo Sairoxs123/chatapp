@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect
 from .models import *
 from django.http import JsonResponse
 import datetime
@@ -80,8 +80,6 @@ def sendImage(request):
 
     userid = request.POST.get("userid")
 
-    print(incoming, outgoing)
-
     if Messages.objects.all():
         pid = MessageInstances.objects.last().id + 1
     else:
@@ -98,11 +96,12 @@ def sendImage(request):
 
     Messages(incoming=Users.objects.get(username=incoming), outgoing=Users.objects.get(username=outgoing), message=p).save()
 
-    return redirect(f"/main/chat/{userid}")
+    return JsonResponse({"success": True})
 
 
 def sendmessage(request):
-    # messageinput = request.POST.get("message")
+    # This endpoint is now deprecated - using WebSockets instead
+    # Kept for backward compatibility if needed
     incoming = request.GET.get("incoming")
     outgoing = request.GET.get("outgoing")
     messageinput = request.GET.get("message")
@@ -126,39 +125,28 @@ def sendmessage(request):
         incoming=users, outgoing=user, message=messageinst
     )
 
-    data = {"success"}
+    data = {"success": True}
 
-    return HttpResponse(data)
+    return JsonResponse(data)
 
 
 def search(request):
     query = request.GET.get("q")
     users = Users.objects.filter(username__contains=query)
     username = request.session.get("username")
-    main = []
+    results = []
 
     for i in users:
         if i.username == username:
             continue
         else:
-            main.append(
-                f"""
-                    <a href="/main/chat/{i.id}">
-                        <div class="options">
-                            <div class="option">
-                                <div class="img">
-                                    <img src="{ i.photo.url }" height="56" width="56" id="pfp">
-                                </div>
-                                <div class="user">
-                                    <h3>{ i.username }</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                        """
-            )
+            results.append({
+                'id': i.id,
+                'username': i.username,
+                'photo_url': i.photo.url if i.photo else ''
+            })
 
-    return HttpResponse(main)
+    return JsonResponse({'users': results})
 
 
 def date_time(date, time):
@@ -204,150 +192,41 @@ def fetch(request, userid):
     results = Users.objects.all().filter(id=userid)
     username = request.session.get("username")
     messages = Messages.objects.all()
-    main = []
-
-    stored_date = None
+    message_list = []
 
     for i in messages:
-        if stored_date != date_time(str(i.message.date), str(i.message.time)):
-            main.append(f'''
-                <main class="center">
-                    <span>{date_time(str(i.message.date), str(i.message.time))}</span>
-                </main>
-                        ''')
+        for j in results:
+            if (
+                str(i.incoming).strip() == str(username).strip()
+                and str(i.outgoing).strip() == str(j.username).strip()
+            ) or (
+                str(i.incoming).strip() == str(j.username).strip()
+                and str(i.outgoing).strip() == str(username).strip()
+            ):
+                message_data = {
+                    'id': i.message.id,
+                    'message': i.message.message,
+                    'type': i.message.type,
+                    'date': str(i.message.date),
+                    'time': str(i.message.time),
+                    'incoming': str(i.incoming),
+                    'outgoing': str(i.outgoing),
+                    'is_own': str(i.outgoing).strip() == str(username).strip()
+                }
+                
+                if i.message.image:
+                    message_data['image_url'] = i.message.image.url
+                
+                message_list.append(message_data)
 
-            for j in results:
-                if (
-                    str(i.incoming).strip() == str(username).strip()
-                    and str(i.outgoing).strip() == str(j.username).strip()
-                    ):
-                    if str(i.message.type) == "image":
-                        main.append(
-                            f"""<main class="left" id="{i.message.id}">
-                                    <a href="/media/{str(i.message.image)}" target="_blank">
-                                        <img src=/media/{str(i.message.image)} id="text-img" style="width: 200px; height: 150px; border-radius: 22px;">
-                                    </a>
-                                </main>"""
-                        )
-
-                        continue
-
-                    else:
-                        main.append(
-                            f"""<main class="left" id="{i.id}">
-                                <span id="message-{i.message.id}" contenteditable="true">{ i.message.message }</span>
-                            </main>"""
-                        )
-
-                    continue
-
-                elif (
-                    str(i.incoming).strip() == str(j.username).strip()
-                    and str(i.outgoing).strip() == str(username).strip()
-                    ):
-                    if str(i.message.type) == "image":
-                        main.append(
-                            f"""<main class="right" id="{i.message.id}">
-                                <div class="menu-content">
-                                    <button type="button" class="delete-btn" onclick="deleteMessage({i.message.id})">Delete</button>
-                                </div>
-                                <div class="menu">
-                                    <button type="button" class="menu-btn" onclick="openMenu()">...</button>
-                                </div>
-                                <a href="/media/{str(i.message.image)}" target="_blank">
-                                    <img src=/media/{str(i.message.image)} id="text-img" style="width: 200px; height: 150px; border-radius: 22px;">
-                                </a>
-                            </main>"""
-                        )
-
-                        continue
-
-                    else:
-                        main.append(
-                            f"""<main class="right" id="{i.message.id}">
-                                <div class="menu-content">
-                                    <button type="button" class="delete-btn" onclick="deleteMessage({i.message.id})">Delete</button>
-                                </div>
-                                <div class="menu">
-                                    <button type="button" class="menu-btn" onclick="openMenu()">...</button>
-                                </div>
-                                <span id="message-{i.message.id}" contenteditable="true">{ i.message.message }</span>
-                            </main>"""
-                        )
-
-                    continue
-
-
-        else:
-            for j in results:
-                if (
-                    str(i.incoming).strip() == str(username).strip()
-                    and str(i.outgoing).strip() == str(j.username).strip()
-                    ):
-                    if str(i.message.type) == "image":
-                        main.append(
-                            f"""<main class="left" id="{i.message.id}">
-                                    <a href="/media/{str(i.message.image)}" target="_blank">
-                                        <img src=/media/{str(i.message.image)} id="text-img" style="width: 200px; height: 150px; border-radius: 22px;">
-                                    </a>
-                                </main>"""
-                        )
-
-                        continue
-
-                    else:
-                        main.append(
-                            f"""<main class="left" id="{i.id}">
-                                <span id="message-{i.message.id}">{ i.message.message }</span>
-                            </main>"""
-                        )
-
-                    continue
-
-                elif (
-                    str(i.incoming).strip() == str(j.username).strip()
-                    and str(i.outgoing).strip() == str(username).strip()
-                    ):
-                    if str(i.message.type) == "image":
-                        main.append(
-                            f"""<main class="right" id="{i.message.id}">
-                                <div class="menu-content">
-                                    <button type="button" class="delete-btn" onclick="deleteMessage({i.message.id})">Delete</button>
-                                </div>
-                                <div class="menu">
-                                    <button type="button" class="menu-btn" onclick="openMenu()">...</button>
-                                </div>
-                                <a href="/media/{str(i.message.image)}" target="_blank">
-                                    <img src=/media/{str(i.message.image)} id="text-img" style="width: 200px; height: 150px; border-radius: 22px;">
-                                </a>
-                            </main>"""
-                        )
-
-                        continue
-
-                    else:
-                        main.append(
-                            f"""<main class="right" id="{i.message.id}">
-                                <div class="menu-content">
-                                    <button type="button" class="delete-btn" onclick="deleteMessage({i.message.id})">Delete</button>
-                                </div>
-                                <div class="menu">
-                                    <button type="button" class="menu-btn" onclick="openMenu()">...</button>
-                                </div>
-                                <span id="message-{i.message.id}">{ i.message.message }</span>
-                            </main>"""
-                        )
-
-                    continue
-
-    return HttpResponse(main)
+    return JsonResponse({'messages': message_list})
 
 
 def deleteMessage(request):
     mid = request.GET.get("id")
     MessageInstances.objects.get(id=mid).delete()
 
-    return HttpResponse("done")
+    return JsonResponse({"success": True})
 
 
 def createGroup(request):
@@ -357,7 +236,7 @@ def createGroup(request):
         selected = selected.split(",")
 
         try:
-            last = Groups.objects.last() + 1
+            last = Groups.objects.last().id + 1
 
         except:
             last = 1
@@ -395,7 +274,7 @@ def groupChat(request, groupid):
         group = Groups.objects.get(id=groupid)
 
     except:
-        return HttpResponse("<center><h1>Group does not exist</h1></center>")
+        return JsonResponse({"error": "Group does not exist"}, status=404)
 
     return render(
         request,
@@ -408,7 +287,7 @@ def groupChat(request, groupid):
             "url": request.session.get("filename"),
             "users": users,
             "groupid": groupid,
-            "group":group
+            "group": group
         },
     )
 
@@ -417,86 +296,35 @@ def fetchGroup(request, groupid):
     group = Groups.objects.get(id=groupid)
     username = request.session.get("username")
     userinst = Users.objects.get(username=username)
+    
     if userinst not in group.members.all():
-        return HttpResponse("You are not added to this group.")
-    messages = GroupMessage.objects.all()
-    main = []
-
-    stored_date = None
+        return JsonResponse({"error": "You are not added to this group."}, status=403)
+    
+    messages = GroupMessage.objects.filter(incoming=group)
+    message_list = []
 
     for i in messages:
-        if stored_date != date_time(str(i.message.date), str(i.message.time)):
-            main.append(f'''
-                <main class="center">
-                    <span>{date_time(str(i.message.date), str(i.message.time))}</span>
-                </main>
-                ''')
-        if i.incoming == group:
-            if str(i.outgoing) == username:
-                if str(i.message.type) == "image":
-                    main.append(
-                        f"""<main class="right" id="{i.message.id}">
-                            <div class="menu-content">
-                                <button type="button" class="delete-btn" onclick="deleteMessage({i.message.id})">Delete</button>
-                            </div>
-                            <div class="menu">
-                                <button type="button" class="menu-btn" onclick="openMenu()">...</button>
-                            </div>
-                            <a href="/media/{str(i.message.image)}" target="_blank">
-                                <img src=/media/{str(i.message.image)} id="text-img" style="width: 200px; height: 150px; border-radius: 22px;">
-                            </a>
-                        </main>"""
-                    )
+        message_data = {
+            'id': i.message.id,
+            'message': i.message.message,
+            'type': i.message.type,
+            'date': str(i.message.date),
+            'time': str(i.message.time),
+            'outgoing': str(i.outgoing.username),
+            'photo_url': i.outgoing.photo.url if i.outgoing.photo else '',
+            'is_own': str(i.outgoing.username) == username
+        }
+        
+        if i.message.image:
+            message_data['image_url'] = i.message.image.url
+        
+        message_list.append(message_data)
 
-                else:
-                    main.append(
-                        f"""<main class="right" id="{i.message.id}">
-                                    <div class="menu-content">
-                                        <button type="button" class="delete-btn" onclick="deleteMessage({i.message.id})">Delete</button>
-                                    </div>
-                                    <div class="menu">
-                                        <button type="button" class="menu-btn" onclick="openMenu()">...</button>
-                                    </div>
-                                    <span id="message-{i.message.id}" contenteditable="true">{ i.message.message }</span>
-                                </main>"""
-                    )
-
-            else:
-                if str(i.message.type) == "image":
-                    main.append(
-                        f"""<main class="left" id="{i.id}">
-                                <div class="image">
-                                    <div class="name">
-                                            {i.outgoing.username}
-                                        </div>
-                                    </div>
-                                <div class="main">
-                                    <img src="{i.outgoing.photo.url}" width="45" height="45" style="border-radius: 50%; margin-right: 0.5%;">
-                                    <a href="/media/{str(i.message.image)}" target="_blank">
-                                        <img src=/media/{str(i.message.image)} id="text-img" style="width: 200px; height: 150px; border-radius: 22px;">
-                                    </a>
-                                </div>
-                            </main>"""
-                    )
-
-                else:
-                    main.append(
-                        f"""<main class="left" id="{i.id}">
-                                <div class="image">
-                                    <div class="name">
-                                            {i.outgoing.username}
-                                        </div>
-                                    </div>
-                                <div class="main">
-                                    <img src="{i.outgoing.photo.url}" width="45" height="45" style="border-radius: 50%;">
-                                    <span>{i.message.message}</span>
-                                </div>
-                            </main>"""
-                    )
-
-    return HttpResponse(main)
+    return JsonResponse({'messages': message_list})
 
 def groupSendmessage(request):
+    # This endpoint is now deprecated - using WebSockets instead
+    # Kept for backward compatibility if needed
     incoming = request.GET.get("incoming")
     outgoing = request.GET.get("outgoing")
     messageinput = request.GET.get("message")
@@ -511,8 +339,6 @@ def groupSendmessage(request):
 
     except:
         lid = 1
-
-    print(lid)
 
     MessageInstances.objects.create(id=lid, type="text", message=messageinput, date=date, time=time)
 
@@ -544,8 +370,6 @@ def groupSendImage(request):
     except:
         pid = 1
 
-    print(pid)
-
     MessageInstances(id=pid, type=Type, message=message, date=date, time=time).save()
 
     p = MessageInstances.objects.get(id=pid)
@@ -557,7 +381,7 @@ def groupSendImage(request):
 
     GroupMessage(incoming=group, outgoing=user, message=p).save()
 
-    return HttpResponse("success")
+    return JsonResponse({"success": True})
 
 
 def api(request):
