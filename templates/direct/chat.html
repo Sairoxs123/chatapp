@@ -138,6 +138,24 @@
         const senderUsername = "{% for i in info %}{{ i.username }}{% endfor %}";
         const senderId = "{{ senderid }}";
         const roomName = [username, senderUsername].sort().join('_');
+        let loadedMessages = new Set();  // Track loaded message IDs
+        
+        // Get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
         
         // WebSocket connection
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -208,6 +226,13 @@
 
         function appendMessage(data) {
             const messagesDiv = document.getElementById('messages');
+            
+            // Skip if message already loaded
+            if (loadedMessages.has(data.message_id)) {
+                return;
+            }
+            loadedMessages.add(data.message_id);
+            
             const isOwn = data.outgoing === username;
             
             const messageDiv = document.createElement('div');
@@ -245,6 +270,7 @@
             const messageDiv = document.getElementById(`message-${messageId}`);
             if (messageDiv) {
                 messageDiv.remove();
+                loadedMessages.delete(messageId);
             }
         }
 
@@ -252,9 +278,6 @@
             fetch(`/main/chat/fetch/${senderId}`)
                 .then(response => response.json())
                 .then(data => {
-                    const messagesDiv = document.getElementById('messages');
-                    messagesDiv.innerHTML = '';
-                    
                     data.messages.forEach(msg => {
                         appendMessage({
                             message: msg.message,
@@ -302,13 +325,16 @@
                 
                 fetch('/main/chat/sendimage', {
                     method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken
+                    },
                     body: formData
                 })
                 .then(response => response.json())
                 .then(data => {
                     closeImageModal();
                     fileInput.value = '';
-                    loadMessages();
+                    // WebSocket will handle adding the message
                 })
                 .catch(error => console.error('Error uploading image:', error));
             }

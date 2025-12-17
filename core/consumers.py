@@ -96,12 +96,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def save_message(self, message, incoming, outgoing, date, time):
-        incoming_user = Users.objects.get(username=incoming)
-        outgoing_user = Users.objects.get(username=outgoing)
+        try:
+            incoming_user = Users.objects.get(username=incoming)
+            outgoing_user = Users.objects.get(username=outgoing)
+        except Users.DoesNotExist:
+            return {'message_id': None}
         
         try:
             last_id = MessageInstances.objects.last().id + 1
-        except:
+        except AttributeError:
             last_id = 1
 
         message_instance = MessageInstances.objects.create(
@@ -124,7 +127,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def delete_message(self, message_id):
         try:
             MessageInstances.objects.get(id=message_id).delete()
-        except:
+        except MessageInstances.DoesNotExist:
             pass
 
 
@@ -221,12 +224,15 @@ class GroupChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def save_group_message(self, message, incoming, outgoing, date, time):
-        group = Groups.objects.get(name=incoming)
-        user = Users.objects.get(username=outgoing)
+        try:
+            group = Groups.objects.get(name=incoming)
+            user = Users.objects.get(username=outgoing)
+        except (Groups.DoesNotExist, Users.DoesNotExist):
+            return {'message_id': None, 'photo_url': ''}
         
         try:
             last_id = MessageInstances.objects.last().id + 1
-        except:
+        except AttributeError:
             last_id = 1
 
         message_instance = MessageInstances.objects.create(
@@ -252,5 +258,5 @@ class GroupChatConsumer(AsyncWebsocketConsumer):
     def delete_message(self, message_id):
         try:
             MessageInstances.objects.get(id=message_id).delete()
-        except:
+        except MessageInstances.DoesNotExist:
             pass
